@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Misión Ciencia y Palabras · Exploradores del conocimiento</title>
+  <meta name="description" content="Integrador gamificado de Lengua y Ciencias Naturales para 4.º grado.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+  <div id="app" class="app">
+
+    <!-- ===== Barra superior (HUD): solo visible durante la aventura ===== -->
+    <header class="hud" id="hud" hidden>
+      <div class="hud-brand">
+        <span class="hud-logo" aria-hidden="true">🧭</span>
+        <div>
+          <strong>Misión Ciencia y Palabras</strong>
+          <small id="hud-explorer">Explorador</small>
+        </div>
+      </div>
+      <div class="hud-progress" aria-label="Progreso de la aventura">
+        <div class="hud-progress-label"><span>Progreso</span><span id="hud-progress-txt">0%</span></div>
+        <div class="bar"><div class="bar-fill" id="hud-progress-bar"></div></div>
+      </div>
+      <div class="hud-score" title="Misiones completadas">
+        <span aria-hidden="true">🧩</span><strong id="hud-score">0/4</strong><small>misiones</small>
+      </div>
+      <div class="hud-badges" id="hud-badges" aria-label="Insignias obtenidas"></div>
+      <div class="hud-sync" id="hud-sync" title="Estado del guardado"></div>
+    </header>
+
+    <main id="main">
+      <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+      <!-- ===== Pantalla de bienvenida ===== -->
+      <section class="screen active" id="s-bienvenida" aria-labelledby="titulo-app">
+        <div class="welcome">
+          <div class="welcome-art" id="welcome-art" aria-hidden="true"></div>
+          <div class="welcome-panel">
+            <p class="kicker">Integrador de Lengua y Ciencias Naturales · 4.º grado</p>
+            <h1 id="titulo-app">MISIÓN CIENCIA Y PALABRAS</h1>
+            <p class="subtitle">Exploradores del conocimiento</p>
+            <p class="lead">El <strong>mapa del conocimiento</strong> se rompió en cuatro piezas. Usá las <span class="tag-lengua">palabras</span> para descifrar pistas y la <span class="tag-nat">ciencia</span> para resolver misterios. ¿Te animás a recuperarlas?</p>
+
+            <!-- Si hay una partida guardada en esta compu, se muestra este bloque -->
+            <div class="resume-box" id="resume-box" hidden>
+              <p>Hay una expedición en curso de <strong id="resume-name"></strong>.</p>
+              <div class="row">
+                <button class="btn btn-gold" id="btn-resume" type="button">Continuar expedición ➜</button>
+                <button class="btn btn-ghost" id="btn-new" type="button">Soy otro alumno</button>
+              </div>
+            </div>
+
+            <form class="login-form" id="login-form" autocomplete="off" novalidate onsubmit="return false">
+              <div class="field">
+                <label for="in-div">Grado y división <span class="req">*</span></label>
+                <input id="in-div" name="division" type="text" maxlength="5" placeholder="4A o 4B" autocapitalize="characters" required aria-describedby="err-in-div">
+                <span class="form-error" id="err-in-div" role="alert"></span>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="in-nombre">Nombre <span class="req">*</span></label>
+                  <input id="in-nombre" name="nombre" type="text" maxlength="40" placeholder="Ej.: Sofía" required aria-describedby="err-in-nombre">
+                  <span class="form-error" id="err-in-nombre" role="alert"></span>
+                </div>
+                <div class="field">
+                  <label for="in-apellido">Apellido <span class="req">*</span></label>
+                  <input id="in-apellido" name="apellido" type="text" maxlength="40" placeholder="Ej.: Gómez" required aria-describedby="err-in-apellido">
+                  <span class="form-error" id="err-in-apellido" role="alert"></span>
+                </div>
+              </div>
+              <button class="btn btn-gold btn-xl" type="submit">¡Comenzar la aventura! 🚀</button>
+              <p class="privacy">Si ya empezaste en esta compu, escribí los mismos datos y seguís donde quedaste.</p>
+            </form>
+          </div>
+        </div>
+        <a class="teacher-link" href="#docente" id="link-docente">Acceso docente</a>
+      </section>
+
+      <!-- ===== Mapa de misiones ===== -->
+      <section class="screen" id="s-mapa" aria-label="Mapa de misiones"></section>
+
+      <!-- ===== Introducción de misión ===== -->
+      <section class="screen" id="s-intro" aria-label="Presentación de la misión"></section>
+
+      <!-- ===== Actividad ===== -->
+      <section class="screen" id="s-actividad" aria-label="Actividad"></section>
+
+      <!-- ===== Misión completada ===== -->
+      <section class="screen" id="s-fin-mision" aria-label="Misión completada"></section>
+
+      <!-- ===== Pantalla final ===== -->
+      <section class="screen" id="s-final" aria-label="Resultados finales"></section>
+
+      <!-- ===== Panel docente ===== -->
+      <section class="screen" id="s-docente" aria-label="Panel docente"></section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+  </div>
+
+  <div class="load-error" id="load-error" hidden>
+    <strong>⚠️ La aventura no pudo cargarse.</strong>
+    <span>Abrí <b>index.html</b> desde la carpeta descomprimida, junto con <b>script.js</b> y <b>styles.css</b>, o usá el archivo <b>jugar-sin-instalar.html</b>. Si ya está publicada, actualizá la página con <b>Ctrl + F5</b>.</span>
+  </div>
+  <script src="script.js?v=3"></script>
+  <script>
+    // Si script.js no cargó (archivo faltante o versión vieja guardada), se avisa en pantalla.
+    setTimeout(function () { if (!window.MCP_READY) document.getElementById('load-error').hidden = false; }, 1500);
+  </script>
+</body>
+</html>
