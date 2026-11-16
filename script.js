@@ -23,7 +23,7 @@
 const CONFIG = {
   // Pegá entre las comillas la URL de la aplicación web de Apps Script
   // (termina en /exec). Ver README.md, paso 3.
-  SHEETS_URL: '',
+  SHEETS_URL: 'https://script.google.com/macros/s/AKfycbxqmnXn6M5iSb1My-0WCbCKmRtF1BBWmZlxTLaNAzjgxkJwmR2pXfEgYxEQiofgnK-l/exec',
 
   PUNTOS_POR_CORRECTA: 10,          // puntos por cada respuesta correcta
   STORAGE_PREFIX: 'mcp_v2_alumno_', // partidas guardadas (una por alumno)
