@@ -23,7 +23,7 @@
 const CONFIG = {
   // Pegá entre las comillas la URL de la aplicación web de Apps Script
   // (termina en /exec). Ver README.md, paso 3.
-  SHEETS_URL: 'https://script.google.com/macros/s/AKfycbxjVAubpzFgQm8lqD-WuFFA_1_GL9j_lLS6D_QeP-wRKa-lTmbGK5txIPh91hZtxLy_/exec',
+  SHEETS_URL: '',
 
   PUNTOS_POR_CORRECTA: 10,          // puntos por cada respuesta correcta
   STORAGE_PREFIX: 'mcp_v2_alumno_', // partidas guardadas (una por alumno)
@@ -109,12 +109,14 @@ const CONT = {
   L_SP: { label: 'Sujeto y predicado', area: LEN },
   L_NUC: { label: 'Núcleo del sujeto y núcleo verbal', area: LEN },
   L_COMP: { label: 'Comprensión lectora', area: LEN },
+  L_TIPO: { label: 'Tipos textuales', area: LEN },
+  L_PARA: { label: 'Elementos paratextuales', area: LEN },
+  L_PARR: { label: 'Párrafos', area: LEN },
   N_AMB: { label: 'Ambientes aeroterrestres y acuáticos', area: NAT },
   N_ADAP: { label: 'Adaptaciones de los animales', area: NAT },
   N_EST: { label: 'Estructuras del aparato locomotor', area: NAT },
   N_FUN: { label: 'Funciones del aparato locomotor', area: NAT },
   N_PREV: { label: 'Prevención y cuidado del aparato locomotor', area: NAT },
-  N_MAG: { label: 'La Tierra como imán y la brújula', area: NAT },
   N_ELEC: { label: 'Fenómenos electrostáticos', area: NAT }
 };
 const GN = ['masculino singular', 'femenino singular', 'masculino plural', 'femenino plural'];
@@ -123,7 +125,7 @@ const GN = ['masculino singular', 'femenino singular', 'masculino plural', 'feme
    4. MISIONES Y ACTIVIDADES
    Tipos: quiz · tf (verdadero/falso) · fill (completar) · classify (arrastrar
    y clasificar) · match (unir con flechas) · tokens (seleccionar palabras) ·
-   order (ordenar secuencias) · syntax (análisis de oraciones) · table
+   syntax (análisis de oraciones) · table
    (análisis por palabra) · hotspot (ilustración con zonas seleccionables)
    ========================================================================= */
 const MISSIONS = [
@@ -133,7 +135,9 @@ const MISSIONS = [
     title: 'Los secretos de los animales de Mendoza', short: 'Animales de Mendoza',
     badge: { name: 'Guardián de la cordillera', icon: '🏔️' },
     pills: ['Clases de palabras', 'Ambientes y adaptaciones'],
-    story: 'Llegaste a la cordillera mendocina. Entre rocas, ríos y viento helado viven animales asombrosos. Los guardaparques dejaron pistas escritas: si las descifrás, vas a descubrir cómo sobreviven el cóndor, el guanaco, el puma y el zorro… ¡y vas a recuperar la primera pieza del mapa!',
+    story: 'El cóndor te lleva volando hasta la cordillera mendocina: ahí cayó la primera pieza del mapa. Los guardaparques la encontraron, pero solo se la van a dar a quien conozca a los animales de la montaña. Descifrá sus pistas sobre el cóndor, el guanaco, el puma y el zorro… ¡y la pieza será tuya!',
+    chapter: 'La cordillera',
+    outro: 'Los guardaparques te entregan la primera pieza. Al darla vuelta, Valentina descubre un dibujo: un esqueleto y una flecha que señala un laboratorio. Después de tanto caminar por la montaña, al equipo le duelen las piernas… ¡justo a tiempo para investigar cómo se mueve el cuerpo!',
     activities: [
       {
         id: 'M1A1', type: 'tokens', title: 'Pista 1: el guanaco',
@@ -236,7 +240,9 @@ const MISSIONS = [
     title: 'El cuerpo humano en acción', short: 'Cuerpo en acción',
     badge: { name: 'Investigador del cuerpo', icon: '🦴' },
     pills: ['Artículos y pronombres personales', 'Aparato locomotor'],
-    story: 'Bienvenido al laboratorio de investigación del cuerpo humano. Los científicos necesitan ayuda: las etiquetas de huesos, articulaciones y músculos se mezclaron. Con tus conocimientos de Lengua y de Naturales vas a ordenar todo… ¡y a ganar la segunda pieza del mapa!',
+    story: 'Siguiendo el dibujo del esqueleto, el equipo llega al laboratorio del cuerpo humano. Los científicos guardan la segunda pieza, pero el viento Zonda entró por la ventana y mezcló todas las etiquetas de huesos, articulaciones y músculos. Ayudalos a poner todo en su lugar y te van a entregar la pieza.',
+    chapter: 'El laboratorio',
+    outro: 'Los científicos te entregan la segunda pieza y te cuentan que la tercera cayó cerca de un campamento donde, por las noches, pasan cosas muy raras. Antes de despedirse, le regalan a Joaquín un globo para el viaje. ¡Pronto van a descubrir para qué sirve!',
     activities: [
       {
         id: 'M2A1', type: 'fill', title: 'Etiquetas del laboratorio', cont: 'L_ART',
@@ -337,113 +343,84 @@ const MISSIONS = [
 
   /* ---------------------------------------------------------------- M3 */
   {
-    id: 'M3', num: 3, icon: '🌎', scene: 'tierra',
-    title: 'La Tierra: un imán gigante', short: 'Un imán gigante',
-    badge: { name: 'Maestro del magnetismo', icon: '🧲' },
-    pills: ['Análisis de oraciones', 'Fenómenos magnéticos y electrostáticos'],
-    story: '¡Atención, explorador! Las brújulas del equipo se comportan de manera misteriosa y algunos globos se quedan pegados a las paredes del campamento. Vas a investigar fuerzas invisibles y a convertirte en detective de oraciones para ganar la tercera pieza del mapa.',
+    id: 'M3', num: 3, icon: '⚡', scene: 'campamento',
+    title: 'Chispas invisibles', short: 'Chispas invisibles',
+    badge: { name: 'Experto en electricidad estática', icon: '⚡' },
+    pills: ['Análisis de oraciones', 'Fenómenos electrostáticos'],
+    story: 'El equipo llega al campamento en un día seco y ventoso. Al rato empiezan las rarezas: el globo de Joaquín queda pegado a la carpa, el pelo de Valentina se levanta solo y los buzos hacen chasquidos. La tercera pieza está escondida aquí. Investigá estas fuerzas invisibles y convertite en detective de oraciones para encontrarla.',
+    chapter: 'El campamento',
+    outro: '¡Misterio resuelto! La tercera pieza, que es de papel, estaba pegada al globo de Joaquín: al frotarlo, la electricidad estática la había atrapado. En la pieza aparece una lupa dibujada: la última pista lleva al archivo secreto de los detectives.',
     activities: [
       {
-        id: 'M3A1', type: 'tf', title: 'Fuerzas invisibles', cont: 'N_MAG',
-        consigna: 'Leé cada afirmación y decidí si es verdadera o falsa.',
-        statements: [
-          { id: 'iman', s: 'La Tierra se comporta como un imán gigante.', answer: true, explain: 'La Tierra tiene propiedades magnéticas, como un enorme imán.' },
-          { id: 'aguja', s: 'La aguja de la brújula es un pequeño imán.', answer: true, explain: 'La aguja está imantada: es un pequeño imán que puede girar.' },
-          { id: 'sigue', s: 'La aguja de la brújula siempre señala hacia donde camina el explorador.', answer: false, explain: 'La aguja no sigue al explorador: siempre se orienta hacia el norte.' },
-          { id: 'polos', s: 'Dos polos iguales de dos imanes se atraen.', answer: false, explain: 'Los polos iguales se rechazan; los polos distintos se atraen.' },
-          { id: 'hierro', s: 'Un imán atrae objetos de hierro, como un clip.', answer: true, explain: 'Los imanes atraen objetos de hierro, como clips, clavos o tornillos.' },
-          { id: 'madera', s: 'Un imán atrae la madera y el plástico.', answer: false, explain: 'La madera y el plástico no son atraídos por los imanes.' }
-        ]
-      },
-      {
-        id: 'M3A2', type: 'order', title: 'Armamos una brújula casera', cont: 'N_MAG',
-        consigna: 'Ordená los pasos del experimento. Arrastrá las tarjetas o usá las flechas.',
-        steps: [
-          'Frotamos una aguja con un imán, siempre en el mismo sentido.',
-          'Pegamos la aguja imantada sobre un trocito de corcho.',
-          'Ponemos el corcho a flotar en un plato con agua.',
-          'Observamos que la aguja gira y se orienta en dirección norte-sur.'
-        ],
-        explain: 'Primero se imanta la aguja, después se la apoya sobre el corcho, se la pone a flotar y, por último, se observa cómo se orienta.'
-      },
-      {
-        id: 'M3A3', type: 'quiz', title: 'Perdidos en la montaña', cont: 'N_MAG',
-        consigna: 'Resolvé las situaciones con lo que sabés sobre la brújula.',
-        questions: [
-          { id: 'sur', q: 'La aguja de la brújula señala el norte y el explorador necesita ir hacia el sur. ¿Qué tiene que hacer?', options: ['Caminar en sentido contrario al que señala la aguja', 'Caminar hacia donde señala la aguja', 'Esperar a que la aguja señale el sur'], answer: 0, explain: 'El sur está en sentido opuesto al norte que marca la aguja.' },
-          { id: 'porque', q: '¿Por qué la aguja de la brújula se orienta hacia el norte?', options: ['Porque la Tierra se comporta como un imán gigante', 'Porque el viento la empuja', 'Porque la aguja es muy liviana'], answer: 0, explain: 'La aguja imantada se orienta por el magnetismo de la Tierra.' }
-        ]
-      },
-      {
-        id: 'M3A4', type: 'syntax', title: 'Detectives de oraciones',
+        id: 'M3B1', type: 'syntax', title: 'Detectives de oraciones',
         consigna: 'Decidí si cada oración es bimembre o unimembre. En las bimembres, pintá el sujeto y el predicado y marcá sus núcleos.',
         sentences: [
-          { id: 's1', text: 'La aguja de la brújula señala el norte.', type: 'bi', subjEnd: 4, ns: 1, nv: 5 },
-          { id: 's2', text: '¡Qué imán tan poderoso!', type: 'uni' },
-          { id: 's3', text: 'Los imanes atraen objetos de hierro.', type: 'bi', subjEnd: 1, ns: 1, nv: 2 },
+          { id: 's1', text: 'La lana del buzo hace chasquidos.', type: 'bi', subjEnd: 3, ns: 1, nv: 4 },
+          { id: 's2', text: '¡Qué globo tan liviano!', type: 'uni' },
+          { id: 's3', text: 'Los globos frotados atraen papelitos.', type: 'bi', subjEnd: 2, ns: 1, nv: 3 },
           { id: 's4', text: 'Un experimento con globos y papelitos.', type: 'uni' }
         ]
       },
       {
-        id: 'M3A5', type: 'table', title: 'Laboratorio de palabras',
+        id: 'M3B2', type: 'table', title: 'Laboratorio de palabras',
         consigna: 'Analizá cada palabra de la oración: su clase y su género y número.',
-        context: 'La aguja imantada señala el norte geográfico.',
+        context: 'La regla frotada atrae el papel picado.',
         columns: [
           { key: 'clase', label: 'Clase de palabra', options: ['sustantivo', 'adjetivo', 'verbo', 'artículo'], cont: 'L_CLASES' },
           { key: 'gn', label: 'Género y número', options: GN, cont: 'L_GN' }
         ],
         rows: [
           { id: 'la', word: 'La', clase: 'artículo', gn: 'femenino singular' },
-          { id: 'aguja', word: 'aguja', clase: 'sustantivo', gn: 'femenino singular' },
-          { id: 'imantada', word: 'imantada', clase: 'adjetivo', gn: 'femenino singular' },
+          { id: 'regla', word: 'regla', clase: 'sustantivo', gn: 'femenino singular' },
+          { id: 'frotada', word: 'frotada', clase: 'adjetivo', gn: 'femenino singular' },
           { id: 'el', word: 'el', clase: 'artículo', gn: 'masculino singular' },
-          { id: 'norte', word: 'norte', clase: 'sustantivo', gn: 'masculino singular' },
-          { id: 'geografico', word: 'geográfico', clase: 'adjetivo', gn: 'masculino singular' }
+          { id: 'papel', word: 'papel', clase: 'sustantivo', gn: 'masculino singular' },
+          { id: 'picado', word: 'picado', clase: 'adjetivo', gn: 'masculino singular' }
         ]
       },
       {
-        id: 'M3A6', type: 'classify', title: '¿Magnético o electrostático?',
-        consigna: 'Clasificá cada situación según el fenómeno que se observa.',
-        bins: [{ id: 'm', label: '🧲 Fenómeno magnético' }, { id: 'e', label: '⚡ Fenómeno electrostático' }],
+        id: 'M3B3', type: 'classify', title: '¿Hay electricidad estática?', cont: 'N_ELEC',
+        consigna: 'Clasificá cada situación: ¿es un fenómeno electrostático o no?',
+        bins: [{ id: 'e', label: '⚡ Fenómeno electrostático' }, { id: 'n', label: '❌ No es electrostático' }],
         cards: [
-          { id: 'heladera', text: 'Un imán queda pegado a la puerta de la heladera.', bin: 'm', cont: 'N_MAG', explain: 'El imán es atraído por el metal de la heladera: es un fenómeno magnético.' },
-          { id: 'brujula', text: 'La aguja de la brújula señala el norte.', bin: 'm', cont: 'N_MAG', explain: 'La brújula funciona por el magnetismo de la Tierra.' },
-          { id: 'clips', text: 'Un imán levanta varios clips.', bin: 'm', cont: 'N_MAG', explain: 'El imán atrae el hierro de los clips: es magnetismo.' },
-          { id: 'globo', text: 'Un globo frotado con el pelo queda pegado a la pared.', bin: 'e', cont: 'N_ELEC', explain: 'Al frotar el globo, se carga de electricidad estática.' },
-          { id: 'peine', text: 'Después de peinarnos, el pelo se levanta y se pega al peine.', bin: 'e', cont: 'N_ELEC', explain: 'El roce del peine carga el pelo de electricidad estática.' },
-          { id: 'buzo', text: 'Al sacarnos un buzo de lana se escuchan chasquidos.', bin: 'e', cont: 'N_ELEC', explain: 'Los chasquidos son pequeñas descargas de electricidad estática.' }
+          { id: 'globo', text: 'Un globo frotado con el pelo queda pegado a la pared.', bin: 'e', explain: 'Al frotar el globo, se carga de electricidad estática.' },
+          { id: 'peine', text: 'Después de peinarnos, el pelo se levanta y se pega al peine.', bin: 'e', explain: 'El roce del peine carga el pelo de electricidad estática.' },
+          { id: 'buzo', text: 'Al sacarnos un buzo de lana se escuchan chasquidos.', bin: 'e', explain: 'Los chasquidos son pequeñas descargas de electricidad estática.' },
+          { id: 'pelota', text: 'Una pelota cae al piso cuando la soltamos.', bin: 'n', explain: 'Nadie frotó nada: la pelota cae por su peso, no es electricidad estática.' },
+          { id: 'hielo', text: 'El agua de una cubetera se congela en el freezer.', bin: 'n', explain: 'El agua se congela por el frío, no por electricidad estática.' },
+          { id: 'vela', text: 'Una vela se apaga cuando soplamos.', bin: 'n', explain: 'La vela se apaga por el soplido, no por electricidad estática.' }
         ]
       },
       {
-        id: 'M3A7', type: 'quiz', title: 'Experimento del globo', cont: 'N_ELEC',
+        id: 'M3B4', type: 'quiz', title: 'Experimento del globo', cont: 'N_ELEC',
         consigna: 'Observá el experimento y respondé.',
         context: 'Valentina frota un globo con su pelo y lo acerca a unos papelitos.',
         questions: [
-          { id: 'que', q: '¿Qué ocurre con los papelitos?', options: ['Son atraídos por el globo', 'Se mojan', 'No pasa nada, porque el globo no es un imán'], answer: 0, explain: 'El globo frotado atrae los papelitos aunque no sea un imán.' },
-          { id: 'por', q: '¿Por qué ocurre?', options: ['Porque al frotarlo, el globo se cargó de electricidad estática', 'Porque el globo tiene un imán adentro', 'Porque la Tierra atrae a los papelitos'], answer: 0, explain: 'El frotamiento carga el globo de electricidad estática: es un fenómeno electrostático.' }
+          { id: 'que', q: '¿Qué ocurre con los papelitos?', options: ['Son atraídos por el globo', 'Se mojan', 'Se rompen en pedacitos'], answer: 0, explain: 'El globo frotado atrae los papelitos.' },
+          { id: 'por', q: '¿Por qué ocurre?', options: ['Porque al frotarlo, el globo se cargó de electricidad estática', 'Porque el globo está muy frío', 'Porque los papelitos tienen pegamento'], answer: 0, explain: 'El frotamiento carga el globo de electricidad estática: es un fenómeno electrostático.' }
         ]
       },
       {
-        id: 'M3A8', type: 'quiz', title: 'Desafío de lectura',
+        id: 'M3B5', type: 'quiz', title: 'Desafío de lectura',
         consigna: 'Leé el texto y respondé.',
         text: {
-          title: 'Un imán del tamaño de un planeta',
+          title: 'Chispas en el campamento',
           paras: [
-            'La Tierra se comporta como un imán gigante. Por eso, la aguja de una brújula apunta siempre hacia el norte. Los exploradores usan la brújula para orientarse en la montaña.',
-            'En el campamento, Joaquín frotó un globo con su pelo. Luego, el globo atrajo pequeños trozos de papel. ¡Era un fenómeno electrostático!'
+            'Los exploradores llegaron al campamento en un día seco y ventoso. Al sacarse los buzos de lana, escucharon unos chasquidos muy suaves.',
+            'Más tarde, Joaquín frotó un globo con su pelo. Luego, el globo atrajo pequeños trozos de papel. ¡Era un fenómeno electrostático!'
           ]
         },
         questions: [
-          { id: 'para', q: 'Según el texto, ¿para qué usan la brújula los exploradores?', options: ['Para orientarse en la montaña', 'Para atraer papelitos', 'Para medir la temperatura'], answer: 0, cont: 'L_COMP', explain: 'El texto dice que la usan para orientarse en la montaña.' },
-          { id: 'fen', q: '¿Qué fenómeno ocurrió en el campamento?', options: ['Un fenómeno electrostático', 'Un fenómeno magnético', 'Ninguno'], answer: 0, cont: 'N_ELEC', explain: 'El globo frotado atrajo papelitos: es electricidad estática.' },
-          { id: 'expl', q: 'En la oración «Los exploradores usan la brújula», ¿qué clase de palabra es «exploradores» y cuál es su género y número?', options: ['Sustantivo, masculino plural', 'Adjetivo, masculino plural', 'Sustantivo, femenino singular', 'Verbo, plural'], answer: 0, cont: 'L_GN', explain: '«exploradores» nombra a personas: es sustantivo, masculino y plural.' },
+          { id: 'escu', q: 'Según el texto, ¿qué escucharon los exploradores al sacarse los buzos de lana?', options: ['Unos chasquidos muy suaves', 'El ruido del viento', 'Una canción'], answer: 0, cont: 'L_COMP', explain: 'El texto dice que escucharon unos chasquidos muy suaves.' },
+          { id: 'fen', q: '¿Qué fenómeno ocurrió con el globo de Joaquín?', options: ['Un fenómeno electrostático', 'Un truco de magia', 'Ninguno, fue casualidad'], answer: 0, cont: 'N_ELEC', explain: 'El globo frotado atrajo papelitos: es electricidad estática.' },
+          { id: 'expl', q: 'En la oración «Los exploradores llegaron al campamento», ¿qué clase de palabra es «exploradores» y cuál es su género y número?', options: ['Sustantivo, masculino plural', 'Adjetivo, masculino plural', 'Sustantivo, femenino singular', 'Verbo, plural'], answer: 0, cont: 'L_GN', explain: '«exploradores» nombra a personas: es sustantivo, masculino y plural.' },
           { id: 'peq', q: 'En «pequeños trozos de papel», ¿cuál es el adjetivo calificativo?', options: ['pequeños', 'trozos', 'papel'], answer: 0, cont: 'L_ADJ', explain: '«pequeños» dice cómo son los trozos: es un adjetivo calificativo.' }
         ]
       },
       {
-        id: 'M3A9', type: 'syntax', title: 'Análisis del texto',
+        id: 'M3B6', type: 'syntax', title: 'Análisis del texto',
         consigna: 'Analizá esta oración del texto.',
-        text: 'M3A8',
+        text: 'M3B5',
         sentences: [
           { id: 's1', text: 'Joaquín frotó un globo con su pelo.', type: 'bi', subjEnd: 0, ns: 0, nv: 1 }
         ]
@@ -456,8 +433,10 @@ const MISSIONS = [
     id: 'M4', num: 4, icon: '🔎', scene: 'detectives',
     title: 'Detectives de palabras y naturaleza', short: 'Detectives',
     badge: { name: 'Detective de palabras', icon: '🔎' },
-    pills: ['Clasificación avanzada de palabras', 'Animales, cuerpo humano y Tierra'],
-    story: 'Encontraste el archivo secreto de los científicos: tres textos de divulgación llenos de pistas. Para abrir el cofre de la cuarta pieza vas a tener que usar todo lo aprendido: sustantivos, adjetivos, numerales, artículos, pronombres… ¡y ciencia!',
+    pills: ['Clases de palabras y tipos textuales', 'Animales, cuerpo humano y electricidad estática'],
+    story: 'La lupa guía al equipo hasta el archivo secreto de los detectives. Allí, dentro de un cofre, espera la última pieza del mapa. Para abrirlo hay que revisar tres textos de divulgación y cinco expedientes misteriosos, usando todo lo aprendido en el viaje: palabras, oraciones, tipos de texto… ¡y ciencia!',
+    chapter: 'El archivo secreto',
+    outro: '¡El cofre se abrió! Con la cuarta pieza en la mano, el equipo une las cuatro partes y el Mapa del Conocimiento vuelve a estar completo.',
     activities: [
       {
         id: 'M4A1', type: 'classify', title: '¿Cómo es o de dónde es?',
@@ -528,40 +507,87 @@ const MISSIONS = [
         ]
       },
       {
-        id: 'M4A6', type: 'quiz', title: 'Texto 3: un planeta con brújula incluida', fixed: true,
+        id: 'M4B6', type: 'quiz', title: 'Texto 3: la regla que atrae papelitos', fixed: true,
         consigna: 'Leé el texto y respondé.',
         text: {
-          title: 'Un planeta con brújula incluida',
-          paras: ['La Tierra es el tercer planeta del sistema solar y funciona como un imán gigante. Un explorador argentino llevó su brújula a la montaña. Ella señaló el norte y así el explorador encontró el camino.']
+          title: 'Una feria de ciencias con chispas',
+          paras: ['El tercer experimento de la feria de ciencias fue el más divertido. Una científica argentina frotó una regla con un paño de lana. Ella acercó la regla a unos papelitos. ¡Los papelitos saltaron hacia la regla!']
         },
         questions: [
           { id: 'tercer', q: '¿Qué tipo de palabra es «tercer»?', options: ['Numeral cardinal', 'Numeral ordinal', 'Numeral partitivo', 'Adjetivo gentilicio'], answer: 1, cont: 'L_NUM', explain: '«tercer» indica el lugar en un orden: es ordinal.' },
-          { id: 'argentino', q: '¿Qué tipo de palabra es «argentino»?', options: ['Adjetivo calificativo', 'Adjetivo gentilicio', 'Sustantivo propio', 'Numeral ordinal'], answer: 1, cont: 'L_GENT', explain: '«argentino» indica de dónde es el explorador: es gentilicio.' },
-          { id: 'ella', q: 'El pronombre «Ella» reemplaza a…', options: ['la brújula', 'la Tierra', 'la montaña', 'el explorador'], answer: 0, cont: 'L_PRON', explain: 'La que señaló el norte fue la brújula.' },
-          { id: 'norte', q: '¿Por qué la brújula pudo señalar el norte?', options: ['Porque la Tierra funciona como un imán gigante', 'Porque la montaña estaba al norte', 'Porque el explorador la giró'], answer: 0, cont: 'N_MAG', explain: 'El magnetismo de la Tierra orienta la aguja de la brújula.' }
+          { id: 'argentina', q: '¿Qué tipo de palabra es «argentina»?', options: ['Adjetivo calificativo', 'Adjetivo gentilicio', 'Sustantivo propio', 'Numeral ordinal'], answer: 1, cont: 'L_GENT', explain: '«argentina» indica de dónde es la científica: es gentilicio.' },
+          { id: 'ella', q: 'El pronombre «Ella» reemplaza a…', options: ['la científica', 'la regla', 'la feria', 'la lana'], answer: 0, cont: 'L_PRON', explain: 'La que acercó la regla a los papelitos fue la científica.' }
         ]
       },
       {
-        id: 'M4A7', type: 'syntax', title: 'Análisis del texto 3',
+        id: 'M4B7', type: 'syntax', title: 'Análisis del texto 3',
         consigna: 'Analizá estas oraciones del texto 3.',
-        text: 'M4A6',
+        text: 'M4B6',
         sentences: [
-          { id: 's1', text: 'Un explorador argentino llevó su brújula a la montaña.', type: 'bi', subjEnd: 2, ns: 1, nv: 3 },
-          { id: 's2', text: 'Ella señaló el norte.', type: 'bi', subjEnd: 0, ns: 0, nv: 1 }
+          { id: 's1', text: 'Una científica argentina frotó una regla con un paño de lana.', type: 'bi', subjEnd: 2, ns: 1, nv: 3 },
+          { id: 's2', text: 'Ella acercó la regla a unos papelitos.', type: 'bi', subjEnd: 0, ns: 0, nv: 1 }
         ]
       },
       {
-        id: 'M4A8', type: 'table', title: 'Fichero de sustantivos', cont: 'L_PROP',
-        consigna: 'Clasificá cada sustantivo de dos maneras.',
-        columns: [
-          { key: 'pc', label: '¿Propio o común?', options: ['propio', 'común'], cont: 'L_PROP' },
-          { key: 'ca', label: '¿Concreto o abstracto?', options: ['concreto', 'abstracto'], cont: 'L_CONC' }
-        ],
-        rows: [
-          { id: 'aconcagua', word: 'Aconcagua', pc: 'propio', ca: 'concreto' },
-          { id: 'cardumen', word: 'cardumen', pc: 'común', ca: 'concreto' },
-          { id: 'curiosidad', word: 'curiosidad', pc: 'común', ca: 'abstracto' },
-          { id: 'amistad', word: 'amistad', pc: 'común', ca: 'abstracto' }
+        id: 'M4A8', type: 'texts', title: 'Detectives de textos',
+        consigna: '“¡Un verdadero detective del lenguaje no solo reconoce las palabras: también descubre qué tipo de texto tiene delante!” Abrí cada expediente, leé el texto y resolvé las 3 pistas.',
+        texts: [
+          {
+            id: 't1', style: 'expo', type: 0, img: 'zorro',
+            title: 'El zorro gris', subtitulo: 'Un vecino astuto del monte mendocino',
+            epigrafe: 'Sus orejas grandes le permiten escuchar sonidos muy lejanos.',
+            paras: [
+              'El zorro gris es un mamífero que vive en gran parte de Argentina. En Mendoza se lo puede ver en el monte, en la precordillera y cerca de los campos.',
+              'Tiene el pelaje grisáceo, la cola larga y peluda, y las orejas grandes. Sale a buscar alimento sobre todo cuando oscurece.',
+              'Se alimenta de roedores, insectos, huevos y frutos. Por eso ayuda a controlar la cantidad de ratones en el ambiente.'
+            ],
+            why: 'Es un texto expositivo: brinda información sobre un tema (el zorro gris).',
+            questions: [
+              { id: 'literal', kind: 'Literal', q: 'Según el texto, ¿de qué se alimenta el zorro gris?', options: ['De roedores, insectos, huevos y frutos', 'Solo de pasto y hojas', 'De peces del río'], answer: 0, explain: 'El texto dice que se alimenta de roedores, insectos, huevos y frutos.' },
+              { id: 'inferencia', kind: 'Inferencia', q: 'Si en un campo desaparecieran los zorros grises, ¿qué podría pasar?', options: ['Habría más ratones', 'Habría menos ratones', 'Crecerían más frutos'], answer: 0, explain: 'El zorro ayuda a controlar la cantidad de ratones: sin zorros, habría más ratones.' },
+              { id: 'opinion', kind: 'Opinión', q: '¿Te parece importante cuidar al zorro gris? ¿Por qué?', open: true }
+            ]
+          },
+          {
+            id: 't2', style: 'cuento', type: 1, img: 'mapa',
+            title: 'El mapa encantado',
+            paras: [
+              'Había una vez, en un reino lejano, una niña llamada Lila que soñaba con conocer el mundo. Un día, un hada le regaló un mapa de oro que podía hablar.',
+              'Lila emprendió el viaje. El mapa le indicaba el camino y así cruzó un bosque de árboles que conversaban entre sí.',
+              'En el río encontró un dragón que no dejaba pasar a nadie. Con la ayuda del mapa, Lila descubrió un puente secreto y logró cruzar.',
+              'Al final, el mapa la llevó de regreso a su casa. Desde ese día, Lila vivió feliz y siguió viajando en cada luna llena.'
+            ],
+            why: 'Es un cuento maravilloso: empieza con «Había una vez», ocurre en un reino lejano y tiene elementos mágicos (un hada, un mapa que habla, un dragón).'
+          },
+          {
+            id: 't3', style: 'leyenda', type: 2, img: 'mate',
+            title: 'La leyenda de la yerba mate', subtitulo: 'Leyenda guaraní',
+            paras: [
+              'Cuentan los guaraníes que, hace mucho tiempo, Yasí, la Luna, y Araí, la Nube, bajaron a la Tierra con forma de muchachas para recorrer la selva.',
+              'De pronto, un yaguareté saltó hacia ellas. Un anciano que vivía en el monte las defendió con su arco y su flecha y las salvó.',
+              'Para agradecerle, Yasí y Araí hicieron crecer allí una planta nueva: la yerba mate. Desde entonces, los guaraníes comparten el mate como señal de amistad.'
+            ],
+            why: 'Es una leyenda: pertenece a un pueblo originario («cuentan los guaraníes») y explica el origen de algo real, la yerba mate.'
+          },
+          {
+            id: 't4', style: 'publi', type: 3, img: 'mochila',
+            title: '¡Mochila Explorador 3000!',
+            epigrafe: 'Disponible en rojo, verde y azul, con cantimplora incluida.',
+            paras: [
+              '¿Vas de excursión o a la escuela? La Mochila Explorador 3000 es liviana, resistente al agua y tiene lugar para todo lo que necesitás.',
+              'Comprala en las librerías de Mendoza. ¡Si la llevás este mes, te regalamos la cantimplora!'
+            ],
+            why: 'Es una publicidad: promociona un producto (una mochila) para que la gente lo compre.'
+          },
+          {
+            id: 't5', style: 'propa', type: 4, img: 'agua',
+            title: 'Cuidemos el agua', subtitulo: 'Cada gota cuenta en Mendoza',
+            paras: [
+              'En Mendoza llueve poco y el agua que usamos viene del deshielo de la cordillera. Por eso es tan valiosa.',
+              'Cerrá la canilla mientras te cepillás los dientes y avisá si ves una pérdida. ¡Entre todos podemos cuidarla!'
+            ],
+            why: 'Es una propaganda: no vende ningún producto, sino que comunica una idea (cuidar el agua) para cambiar lo que hace la gente.'
+          }
         ]
       }
     ]
@@ -609,7 +635,7 @@ function artDefs(p) {
     ${rg('ocean', '#a7e3ff', '#3b82f6', '#1e3a8a')}
     ${rg('shade', 'rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(10,20,60,.45)', '.4', '.35')}
     ${lg('glass', 'rgba(255,255,255,.75)', 'rgba(210,240,255,.35)')}
-    ${lg('space', '#3b2f8f', '#1f1a5a', '#0c0a2a')}
+    ${lg('dusk', '#3b4b9a', '#7c6bb6', '#f6b48a')}
     ${lg('lab', '#e8f6ff', '#c9e9fb')}${lg('floor', '#d7dee9', '#a9b4c6')}
     ${lg('study', '#fff4d6', '#fbe0a1')}
     ${lg('purple', '#c4b5fd', '#8b5cf6', '#5b21b6', 'x1="0" y1="0" x2="1" y2="1"')}
@@ -693,41 +719,6 @@ function aFish(p, x, y, s = 1, rot = 0) {
     <circle cx="-19" cy="-3" r="3.4" fill="#fff"/><circle cx="-19.5" cy="-3" r="1.8" fill="#0f172a"/>
     <ellipse cx="-4" cy="-7" rx="14" ry="3" fill="#fff" opacity=".45"/></g>`;
 }
-function aCompass(p, x, y, r, cls = '') {
-  const t = Array.from({ length: 16 }, (_, i) => { const a = i * Math.PI / 8, r1 = r * (i % 4 ? .66 : .6), r2 = r * .72; return `<line x1="${(Math.cos(a) * r1).toFixed(1)}" y1="${(Math.sin(a) * r1).toFixed(1)}" x2="${(Math.cos(a) * r2).toFixed(1)}" y2="${(Math.sin(a) * r2).toFixed(1)}" stroke="#9a7b3c" stroke-width="${i % 4 ? 1.5 : 3}"/>`; }).join('');
-  return `<g transform="translate(${x} ${y})" filter="url(#${p}sh)">
-    <circle r="${r}" fill="${G(p, 'gold')}"/><circle r="${r * 0.88}" fill="#9a6a1c"/>
-    <circle r="${r * 0.84}" fill="${G(p, 'face')}"/>${t}
-    <text y="${-r * 0.42}" text-anchor="middle" font-size="${r * 0.26}" font-weight="900" fill="#c2410c" font-family="Baloo 2, sans-serif">N</text>
-    <text y="${r * 0.56}" text-anchor="middle" font-size="${r * 0.2}" font-weight="800" fill="#6b5a3a" font-family="Baloo 2, sans-serif">S</text>
-    <g class="${cls}"><polygon points="0,${-r * 0.7} ${r * 0.13},0 ${-r * 0.13},0" fill="#ef4444"/><polygon points="0,${-r * 0.7} 0,0 ${-r * 0.13},0" fill="#b91c1c"/>
-    <polygon points="0,${r * 0.7} ${r * 0.13},0 ${-r * 0.13},0" fill="#64748b"/><polygon points="0,${r * 0.7} 0,0 ${r * 0.13},0" fill="#334155"/></g>
-    <circle r="${r * 0.11}" fill="${G(p, 'gold')}" stroke="#8a5a12" stroke-width="1.5"/>
-    <path d="M${-r * 0.62} ${-r * 0.2} A${r * 0.66} ${r * 0.66} 0 0 1 ${r * 0.1} ${-r * 0.66}" stroke="#fff" stroke-width="${r * 0.08}" fill="none" opacity=".55" stroke-linecap="round"/></g>`;
-}
-function aGlobe(p, x, y, r) {
-  const c = p + 'gc';
-  return `<g transform="translate(${x} ${y})">
-    <ellipse cx="0" cy="${r * 1.15}" rx="${r * 0.8}" ry="${r * 0.12}" fill="#000" opacity=".25" filter="url(#${p}blur)"/>
-    <clipPath id="${c}"><circle r="${r}"/></clipPath>
-    <circle r="${r}" fill="${G(p, 'ocean')}"/>
-    <g clip-path="url(#${c})">
-      <path d="M${-r * .7} ${-r * .55} C${-r * .3} ${-r * .9} ${r * .1} ${-r * .6} ${-r * .05} ${-r * .25} C${-r * .2} 0 ${-r * .55} ${-r * .05} ${-r * .5} ${r * .3} C${-r * .6} ${r * .45} ${-r * 1} ${r * .2} ${-r * .9} ${-r * .2}Z" fill="${G(p, 'grass')}"/>
-      <path d="M${r * .2} ${r * .05} C${r * .55} ${-r * .1} ${r * .8} ${r * .2} ${r * .6} ${r * .55} C${r * .45} ${r * .8} ${r * .15} ${r * .75} ${r * .25} ${r * .45}Z" fill="${G(p, 'grass2')}"/>
-      <path d="M${r * .25} ${-r * .75} C${r * .5} ${-r * .8} ${r * .8} ${-r * .55} ${r * .55} ${-r * .38} C${r * .4} ${-r * .3} ${r * .2} ${-r * .5} ${r * .25} ${-r * .75}Z" fill="${G(p, 'grass')}"/>
-      <ellipse cx="0" cy="${-r * .98}" rx="${r * .5}" ry="${r * .16}" fill="#fff"/><ellipse cx="0" cy="${r * .98}" rx="${r * .55}" ry="${r * .16}" fill="#fff"/>
-    </g>
-    <circle r="${r}" fill="${G(p, 'shade')}"/>
-    <ellipse cx="${-r * .38}" cy="${-r * .42}" rx="${r * .32}" ry="${r * .2}" transform="rotate(-30 ${-r * .38} ${-r * .42})" fill="#fff" opacity=".45"/></g>`;
-}
-function aMagnet(p, x, y, s = 1, rot = 0) {
-  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" filter="url(#${p}sh)">
-    <path d="M-30 -36 L-30 8 A30 30 0 0 0 30 8 L30 -36" stroke="${G(p, 'red')}" stroke-width="26" fill="none"/>
-    <path d="M-36 -36 L-36 8 A36 36 0 0 0 -8 43" stroke="#fff" stroke-width="5" fill="none" opacity=".4" stroke-linecap="round"/>
-    <rect x="-43" y="-60" width="26" height="24" rx="3" fill="${G(p, 'metal')}"/><rect x="17" y="-60" width="26" height="24" rx="3" fill="${G(p, 'metal')}"/>
-    <text x="-30" y="-42" text-anchor="middle" font-size="14" font-weight="900" fill="#334155" font-family="Baloo 2, sans-serif">N</text>
-    <text x="30" y="-42" text-anchor="middle" font-size="14" font-weight="900" fill="#334155" font-family="Baloo 2, sans-serif">S</text></g>`;
-}
 function aMagnifier(p, x, y, s = 1, rot = -35) {
   return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" filter="url(#${p}sh)">
     <rect x="-8" y="34" width="16" height="58" rx="7" fill="${G(p, 'wood')}"/><rect x="-10" y="30" width="20" height="10" rx="3" fill="${G(p, 'metal')}"/>
@@ -780,10 +771,9 @@ function aBooks(p, x, y, s = 1) {
   const b = (dx, dy, w, h, g) => `<rect x="${dx}" y="${dy}" width="${w}" height="${h}" rx="3" fill="${G(p, g)}"/><rect x="${dx + 3}" y="${dy + 3}" width="${w - 6}" height="3" fill="#fff" opacity=".5"/>`;
   return `<g transform="translate(${x} ${y}) scale(${s})" filter="url(#${p}shs)">${b(-40, -16, 84, 16, 'blue')}${b(-34, -32, 76, 16, 'green')}${b(-44, -48, 80, 16, 'purple')}${b(-36, -64, 72, 16, 'orange')}</g>`;
 }
-/** Personaje explorador. prop: 'map' | 'magnifier' | 'compass' */
+/** Personaje explorador. prop: 'map' | 'magnifier' | 'none' */
 function aExplorer(p, x, y, s = 1, prop = 'map') {
   const propSvg = prop === 'magnifier' ? aMagnifier(p, 40, -132, .42, -20)
-    : prop === 'compass' ? aCompass(p, 40, -128, 17)
     : prop === 'none' ? ''
     : `<g transform="translate(38 -128) rotate(-8)"><rect x="-6" y="-22" width="34" height="40" rx="3" fill="${G(p, 'paper')}" stroke="#c79a52" stroke-width="2"/><path d="M-1 8 C6 -6 14 10 22 -10" stroke="#b45309" stroke-width="2.5" stroke-dasharray="3 3" fill="none"/></g>`;
   return `<g transform="translate(${x} ${y}) scale(${s})" class="explorer">
@@ -835,7 +825,7 @@ function sceneSVG(kind, opts = {}) {
         <path d="M600 300 C540 312 520 330 470 338 C420 346 410 366 380 380 L460 380 C480 362 520 350 560 344 C580 340 590 334 600 332Z" fill="${G(p, 'water')}"/>
         <path d="M590 312 C550 322 530 334 500 340" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>
         ${aBush(p, 250, 318, .8)}${aBush(p, 330, 352, .9)}${aBush(p, 560, 300, .6)}
-        ${welcome ? `${aCondor(p, 360, 120, .8)}${aCompass(p, 480, 300, 52, 'needle')}${aExplorer(p, 175, 368, 1.12, 'compass')}${aGuanaco(p, 330, 300, .75)}`
+        ${welcome ? `${aCondor(p, 360, 120, .8)}${aMagnifier(p, 490, 290, .9, -25)}${aExplorer(p, 175, 368, 1.12, 'map')}${aGuanaco(p, 330, 300, .75)}`
           : `${aCondor(p, 330, 100, .85)}${aGuanaco(p, 470, 282, 1.05)}${aFox(p, 360, 330, .95)}${aFish(p, 520, 350, .75, -25)}${aExplorer(p, 110, 362, .95, 'map')}`}`);
     }
     case 'laboratorio':
@@ -851,19 +841,19 @@ function sceneSVG(kind, opts = {}) {
         <rect x="160" y="278" width="14" height="46" fill="${G(p, 'wood')}"/><rect x="570" y="278" width="14" height="46" fill="${G(p, 'wood')}"/>
         ${aMicroscope(p, 500, 232, .85)}${aBone(p, 300, 214, .85, -8)}${aFlask(p, 555, 216, .7, 'blue')}
         ${aExplorer(p, 92, 362, .95, 'magnifier')}`);
-    case 'tierra':
-      return wrap(`<rect width="600" height="380" fill="${G(p, 'space')}"/>
-        <circle cx="140" cy="90" r="120" fill="#7c3aed" opacity=".25" filter="url(#${p}blur)"/><circle cx="500" cy="300" r="140" fill="#db2777" opacity=".18" filter="url(#${p}blur)"/>
-        ${Array.from({ length: 46 }, (_, i) => `<circle class="${i % 5 ? '' : 'twinkle'}" cx="${(i * 97 + 13) % 600}" cy="${(i * 53 + 7) % 380}" r="${i % 4 ? 1.2 : 2.2}" fill="#fff" opacity="${.5 + (i % 3) * .2}"/>`).join('')}
-        <ellipse cx="320" cy="180" rx="250" ry="120" fill="none" stroke="#f472b6" stroke-width="2.5" stroke-dasharray="8 9" opacity=".75"/>
-        <ellipse cx="320" cy="180" rx="180" ry="86" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-dasharray="8 9" opacity=".85"/>
-        ${aGlobe(p, 320, 180, 96)}
-        <text x="320" y="64" text-anchor="middle" fill="#fff" font-weight="900" font-size="24" font-family="Baloo 2, sans-serif">N</text>
-        <text x="320" y="312" text-anchor="middle" fill="#fff" font-weight="900" font-size="24" font-family="Baloo 2, sans-serif">S</text>
-        <path d="M0 330 C80 310 160 330 220 352 L220 380 L0 380Z" fill="${G(p, 'grey')}"/>
-        <ellipse cx="60" cy="350" rx="16" ry="5" fill="#475569" opacity=".5"/><ellipse cx="150" cy="356" rx="10" ry="3" fill="#475569" opacity=".5"/>
-        ${aCompass(p, 520, 300, 44, 'needle')}${aMagnet(p, 520, 110, .85, 18)}${aBalloon(p, 150, 120, .75)}
-        ${aExplorer(p, 92, 358, .85, 'compass')}`);
+    case 'campamento':
+      return wrap(`<rect width="600" height="380" fill="${G(p, 'dusk')}"/>
+        <circle cx="470" cy="70" r="80" fill="#fde68a" opacity=".35" filter="url(#${p}blur)"/><circle cx="470" cy="70" r="30" fill="#fff7d6"/>
+        ${Array.from({ length: 26 }, (_, i) => `<circle class="${i % 4 ? '' : 'twinkle'}" cx="${(i * 97 + 13) % 600}" cy="${(i * 37 + 7) % 150}" r="${i % 4 ? 1.2 : 2}" fill="#fff" opacity=".8"/>`).join('')}
+        ${aMountains(p, [[90, 150, 120], [300, 120, 150], [520, 160, 130]], 270, 'mLb', 'mDb', false)}
+        <path d="M0 270 C120 250 240 280 360 262 C460 250 540 270 600 258 L600 380 L0 380Z" fill="${G(p, 'grass')}"/>
+        <path d="M0 320 C150 300 300 336 600 310 L600 380 L0 380Z" fill="${G(p, 'grass2')}"/>
+        <g filter="url(#${p}sh)"><path d="M330 300 L410 170 L490 300Z" fill="${G(p, 'orange')}"/><path d="M410 170 L490 300 L530 290 L450 168Z" fill="#c2410c"/>
+          <path d="M392 300 L410 238 L428 300Z" fill="#7c2d12"/><line x1="410" y1="170" x2="410" y2="150" stroke="#5b3415" stroke-width="4"/></g>
+        ${aBush(p, 560, 320, .8)}${aBush(p, 250, 330, .7)}
+        ${aBalloon(p, 230, 150, .85)}
+        ${[[270, 120], [196, 96], [262, 196], [300, 160]].map(([x, y], i) => `<path class="twinkle" d="M${x} ${y} l6 -10 l-2 8 l8 -2 l-6 10 l2 -8z" fill="#fde047" stroke="#f59e0b" stroke-width="1.5"/>`).join('')}
+        ${aExplorer(p, 110, 362, .95, 'map')}`);
     default: // detectives
       return wrap(`<rect width="600" height="380" fill="${G(p, 'study')}"/>
         <rect x="20" y="30" width="150" height="190" rx="8" fill="${G(p, 'wood')}" filter="url(#${p}shs)"/>
@@ -875,11 +865,32 @@ function sceneSVG(kind, opts = {}) {
         ${aScroll(p, 290, 236, .95)}${aMagnifier(p, 340, 214, .9, -30)}
         <g filter="url(#${p}shs)"><rect x="140" y="216" width="70" height="46" rx="4" fill="#fff" transform="rotate(-8 175 239)"/><text x="160" y="248" font-family="Baloo 2, sans-serif" font-weight="900" font-size="26" fill="#4338ca" transform="rotate(-8 175 239)">Aa</text></g>
         <path d="M430 236 C440 210 470 204 486 214 C474 222 460 232 430 236Z" fill="${G(p, 'grass')}"/>
-        ${aMagnet(p, 230, 296, .45, -20)}
         ${aExplorer(p, 525, 368, 1, 'magnifier')}`);
   }
 }
-const SCENE_OF = { M1: 'cordillera', M2: 'laboratorio', M3: 'tierra', M4: 'detectives' };
+/* ---------- Hilo conductor de la aventura ---------- */
+const PROLOGO = {
+  title: 'El viento Zonda y el mapa perdido',
+  paras: [
+    'Los exploradores de Mendoza cuidaban un tesoro: el Mapa del Conocimiento. Pero una tarde sopló el viento Zonda, tan fuerte que rompió el mapa en cuatro piezas y las desparramó por la provincia.',
+    'Un cóndor vio desde el cielo dónde cayó cada pieza y vino a buscarte. Con Valentina y Joaquín, tus compañeros de equipo, vas a recorrer la cordillera, un laboratorio, un campamento y un archivo secreto.',
+    'En cada lugar vas a necesitar las palabras para descifrar pistas y la ciencia para resolver misterios. ¡La aventura empieza ahora!'
+  ]
+};
+function showPrologue(onClose) {
+  const old = $('#prologue'); if (old) old.remove();
+  const close = () => { ov.remove(); if (onClose) onClose(); };
+  const ov = el('div', { class: 'fx prologue', id: 'prologue', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'prologue-title' },
+    el('div', { class: 'fx-card prologue-card' },
+      el('div', { class: 'prologue-art', html: sceneSVG('cordillera') }),
+      el('p', { class: 'kicker' }, '📜 Prólogo'),
+      el('h3', { id: 'prologue-title' }, PROLOGO.title),
+      PROLOGO.paras.map(t => el('p', {}, t)),
+      el('button', { class: 'btn btn-gold btn-xl', type: 'button', onclick: close }, '¡Empezar el viaje! 🚀')));
+  $('#app').append(ov);
+  $('button', ov).focus();
+}
+const SCENE_OF = { M1: 'cordillera', M2: 'laboratorio', M3: 'campamento', M4: 'detectives' };
 
 /** Esqueleto con zonas seleccionables (actividad M2A4) */
 const SKELETON_ANCHORS = {
@@ -1179,45 +1190,6 @@ TYPES.tokens = {
   }
 };
 
-/* ---------- Ordenar secuencias ---------- */
-TYPES.order = {
-  items(a) { return [{ id: `${a.id}-orden`, cont: a.cont, prompt: a.title, correct: a.steps.join(' → '), explain: a.explain }]; },
-  render(a, root, ctx) {
-    const id = `${a.id}-orden`;
-    let order = shuffle(a.steps.map((_, i) => i), ctx.seed + a.id);
-    if (order.every((v, i) => v === i)) order.reverse();
-    let touched = false;   // se considera respondida cuando el alumno movió al menos una tarjeta
-    const list = el('div', { class: 'order-list' });
-    let dragFrom = null;
-    const move = (from, to) => {
-      if (ctx.locked(id) || to < 0 || to >= order.length || from === to) return;
-      const [x] = order.splice(from, 1); order.splice(to, 0, x); touched = true; draw(); ctx.onChange();
-    };
-    function draw() {
-      list.innerHTML = '';
-      order.forEach((stepIdx, pos) => {
-        const item = el('div', { class: 'order-item', draggable: 'true' },
-          el('span', {}, a.steps[stepIdx]),
-          el('div', { class: 'arrows' },
-            el('button', { type: 'button', 'aria-label': 'Subir', onclick: () => move(pos, pos - 1) }, '▲'),
-            el('button', { type: 'button', 'aria-label': 'Bajar', onclick: () => move(pos, pos + 1) }, '▼')));
-        item.addEventListener('dragstart', e => { if (ctx.locked(id)) { e.preventDefault(); return; } dragFrom = pos; item.classList.add('dragging'); e.dataTransfer.setData('text/plain', String(pos)); });
-        item.addEventListener('dragend', () => item.classList.remove('dragging'));
-        item.addEventListener('dragover', e => e.preventDefault());
-        item.addEventListener('drop', e => { e.preventDefault(); if (dragFrom != null) move(dragFrom, pos); dragFrom = null; });
-        list.append(item);
-      });
-    }
-    draw();
-    root.append(el('p', { class: 'hint' }, '👆 Mové las tarjetas hasta que queden en el orden correcto.'), list);
-    return {
-      collect() { return { [id]: touched ? { value: order.map(i => a.steps[i]).join(' → '), correct: order.every((v, i) => v === i), raw: [...order] } : { value: null } }; },
-      restore(raw) { const v = raw[id]; if (Array.isArray(v) && v.length === order.length) { order = [...v]; touched = true; draw(); } },
-      lock(ids) { if (ids.includes(id)) list.classList.add('done-item'); }
-    };
-  }
-};
-
 /* ---------- Análisis sintáctico ---------- */
 TYPES.syntax = {
   items(a) {
@@ -1441,6 +1413,206 @@ TYPES.hotspot = {
   }
 };
 
+/* ---------- Detectives de textos: tipos textuales, paratextos y párrafos ----------
+   Cada texto (expediente) evalúa: tipo textual, ubicación de los paratextos que
+   aparecen (título, subtítulo, imagen, epígrafe) y cantidad de párrafos. */
+const TIPOS_TEXTO = ['Texto expositivo', 'Cuento maravilloso', 'Leyenda', 'Publicidad', 'Propaganda'];
+const PARATEXTOS = { titulo: 'Título', subtitulo: 'Subtítulo', imagen: 'Imagen', epigrafe: 'Epígrafe' };
+/** Paratextos presentes en un expediente (el título y la imagen están en todos). */
+const ptPresent = t => Object.keys(PARATEXTOS).filter(k => k === 'titulo' ? t.title : k === 'imagen' ? t.img : t[k]);
+
+/* Ilustraciones de los expedientes */
+function aBackpack(p, x, y, s = 1) {
+  return `<g transform="translate(${x} ${y}) scale(${s})" filter="url(#${p}sh)">
+    <path d="M-22 -58 C-22 -78 22 -78 22 -58" stroke="#7f1d1d" stroke-width="7" fill="none"/>
+    <rect x="-44" y="-60" width="88" height="104" rx="26" fill="${G(p, 'red')}"/>
+    <rect x="-32" y="0" width="64" height="36" rx="12" fill="#b91c1c"/><rect x="-32" y="0" width="64" height="8" rx="4" fill="#fca5a5" opacity=".6"/>
+    <rect x="-6" y="-14" width="12" height="16" rx="3" fill="${G(p, 'gold')}"/>
+    <path d="M-44 -30 C-58 -26 -58 20 -44 26" stroke="#991b1b" stroke-width="7" fill="none"/>
+    <ellipse cx="-18" cy="-40" rx="14" ry="8" fill="#fff" opacity=".4"/>
+    <g transform="translate(52 10)"><rect x="-12" y="-26" width="24" height="44" rx="10" fill="${G(p, 'metal')}"/><rect x="-6" y="-34" width="12" height="10" rx="3" fill="#475569"/></g></g>`;
+}
+function aMate(p, x, y, s = 1) {
+  const leaf = (lx, ly, r) => `<ellipse cx="${lx}" cy="${ly}" rx="13" ry="6" transform="rotate(${r} ${lx} ${ly})" fill="${G(p, 'grass')}"/>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <circle cx="44" cy="-62" r="22" fill="#f8fafc" filter="url(#${p}shs)"/><circle cx="52" cy="-66" r="18" fill="#fffbe6"/>
+    <path d="M0 40 C0 10 -4 -20 0 -50" stroke="#7c4a1e" stroke-width="6" fill="none" stroke-linecap="round"/>
+    ${[[-14, -40, -30], [14, -34, 30], [-16, -16, -25], [16, -10, 25], [-14, 8, -30], [14, 14, 30], [0, -56, 90]].map(([a, b, r]) => leaf(a, b, r)).join('')}
+    <g transform="translate(-48 34)" filter="url(#${p}sh)"><path d="M-16 -16 C-20 10 -12 22 0 22 C12 22 20 10 16 -16Z" fill="${G(p, 'wood')}"/>
+      <ellipse cx="0" cy="-16" rx="16" ry="5" fill="#3f6212"/><rect x="6" y="-44" width="4" height="32" rx="2" transform="rotate(15 8 -28)" fill="${G(p, 'metal')}"/></g></g>`;
+}
+function aDrop(p, x, y, s = 1) {
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <g filter="url(#${p}sh)"><rect x="-70" y="-74" width="70" height="18" rx="8" fill="${G(p, 'metal')}"/><rect x="-14" y="-74" width="18" height="34" rx="6" fill="${G(p, 'metal')}"/>
+      <rect x="-44" y="-86" width="18" height="12" rx="4" fill="#ef4444"/></g>
+    <g filter="url(#${p}sh)"><path d="M-5 -30 C-5 -30 -30 6 -30 22 C-30 38 -18 50 -5 50 C8 50 20 38 20 22 C20 6 -5 -30 -5 -30Z" fill="${G(p, 'water')}"/>
+      <ellipse cx="-14" cy="18" rx="6" ry="11" fill="#fff" opacity=".6"/>
+      <circle cx="-12" cy="30" r="2.6" fill="#0c4a6e"/><circle cx="2" cy="30" r="2.6" fill="#0c4a6e"/><path d="M-12 38 Q-5 44 2 38" stroke="#0c4a6e" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></g>`;
+}
+function textImage(kind) {
+  const p = artId();
+  const bg = { zorro: '#e9f7e4', mapa: '#efe9ff', mate: '#e6f6ea', mochila: '#fff1e6', agua: '#e3f5fd' }[kind];
+  const inner = kind === 'zorro' ? `${aBush(p, 40, 120, .9)}${aBush(p, 210, 124, .7)}${aFox(p, 120, 90, 1.3)}`
+    : kind === 'mapa' ? `${Array.from({ length: 9 }, (_, i) => aStar(p, 24 + (i * 53) % 200, 18 + (i * 37) % 110, 5 + (i % 3) * 2, 'twinkle')).join('')}${aScroll(p, 120, 78, .85)}`
+    : kind === 'mate' ? aMate(p, 132, 82, 1)
+    : kind === 'mochila' ? aBackpack(p, 112, 82, .95)
+    : aDrop(p, 132, 78, 1);
+  return `<svg viewBox="0 0 240 150" role="img" aria-label="Imagen del texto">${artDefs(p)}<rect width="240" height="150" rx="14" fill="${bg}"/>${inner}</svg>`;
+}
+
+TYPES.texts = {
+  items(a) {
+    const out = [];
+    a.texts.forEach((t, ti) => {
+      const base = `${a.id}-${t.id}`, nom = `Expediente ${ti + 1} («${t.title}»)`;
+      out.push({ id: `${base}-tipo`, cont: 'L_TIPO', prompt: `${nom}: ¿qué tipo de texto es?`, correct: TIPOS_TEXTO[t.type], explain: t.why });
+      ptPresent(t).forEach(k => out.push({
+        id: `${base}-${k}`, cont: 'L_PARA', prompt: `${nom}: etiqueta del elemento señalado (${k === 'imagen' ? 'la imagen' : `«${k === 'titulo' ? t.title : t[k]}»`})`,
+        correct: PARATEXTOS[k], explain: `Ese elemento es ${PARATEXTOS[k].toLowerCase() === 'imagen' ? 'la imagen' : 'el ' + PARATEXTOS[k].toLowerCase()}.`
+      }));
+      const qs = (t.questions || []).map(q => ({
+        id: `${base}-q-${q.id}`, cont: 'L_COMP', open: !!q.open, prompt: `${nom}: comprensión ${q.kind.toLowerCase()}. ${q.q}`,
+        correct: q.open ? 'Respuesta abierta: la docente revisa el argumento' : q.options[q.answer],
+        explain: q.open ? 'Pregunta de opinión: se valora que dé una razón.' : q.explain
+      }));
+      out.push({ id: `${base}-parr`, cont: 'L_PARR', prompt: `${nom}: ¿cuántos párrafos tiene?`, correct: String(t.paras.length), explain: `El texto tiene ${t.paras.length} párrafos.` });
+      out.push(...qs);
+    });
+    return out;
+  },
+  render(a, root, ctx) {
+    const state = {};   // id ítem → valor elegido
+    const ui = {};      // id ítem → función que vuelve a dibujar
+    const tabs = el('div', { class: 'exp-tabs', role: 'tablist' });
+    const pages = el('div', { class: 'exp-pages' });
+    let current = 0;
+    const tabBtns = [], pageEls = [];
+    const itemIds = t => [`${a.id}-${t.id}-tipo`, ...ptPresent(t).map(k => `${a.id}-${t.id}-${k}`), `${a.id}-${t.id}-parr`, ...(t.questions || []).map(q => `${a.id}-${t.id}-q-${q.id}`)];
+    const showPage = i => {
+      current = i;
+      pageEls.forEach((pg, j) => { pg.hidden = j !== i; });
+      tabBtns.forEach((b, j) => b.classList.toggle('active', j === i));
+    };
+    const refreshTabs = () => a.texts.forEach((t, i) => {
+      const ids = itemIds(t), n = ids.filter(id => state[id] != null).length;
+      tabBtns[i].classList.toggle('full', n === ids.length); tabBtns[i].classList.toggle('part', n > 0 && n < ids.length);
+    });
+    const changed = () => { refreshTabs(); ctx.onChange(); };
+
+    a.texts.forEach((t, ti) => {
+      const base = `${a.id}-${t.id}`;
+      tabBtns.push(el('button', { type: 'button', class: 'exp-tab', role: 'tab', onclick: () => showPage(ti) }, `📁 Expediente ${ti + 1}`));
+      tabs.append(tabBtns[ti]);
+      let picked = null;   // etiqueta elegida para ubicar
+      const bankBtns = {};
+      const slots = {};
+      // ----- documento
+      const slot = k => {
+        const id = `${base}-${k}`;
+        const b = el('button', { type: 'button', class: 'pt-slot', 'aria-label': `Lugar para una etiqueta (${k === 'imagen' ? 'imagen' : 'elemento del texto'})` }, '¿?');
+        b.addEventListener('click', () => {
+          if (ctx.locked(id)) return;
+          if (picked) { for (const [sk, sv] of Object.entries(slots)) if (state[sv.id] === picked && !ctx.locked(sv.id)) { state[sv.id] = null; sv.draw(); } state[id] = picked; picked = null; drawBank(); }
+          else if (state[id]) { state[id] = null; drawBank(); }
+          else { toast('Primero elegí una etiqueta.'); return; }
+          slots[k].draw(); changed();
+        });
+        b.addEventListener('dragover', e => { if (!ctx.locked(id)) { e.preventDefault(); b.classList.add('over'); } });
+        b.addEventListener('dragleave', () => b.classList.remove('over'));
+        b.addEventListener('drop', e => { e.preventDefault(); b.classList.remove('over'); const lab = e.dataTransfer.getData('text/plain'); if (!PARATEXTOS[lab] || ctx.locked(id)) return; picked = lab; b.click(); });
+        slots[k] = { id, b, draw() { const v = state[id]; b.textContent = v ? PARATEXTOS[v] : '¿?'; b.classList.toggle('filled', !!v); b.classList.toggle('done-item', ctx.locked(id)); } };
+        ui[id] = () => { slots[k].draw(); drawBank(); };
+        return b;
+      };
+      const doc = el('article', { class: `exp-doc exp-${t.style}` },
+        el('div', { class: 'pt-row' }, slot('titulo'), el('h4', { class: 'exp-title' }, t.title)),
+        t.subtitulo ? el('div', { class: 'pt-row' }, slot('subtitulo'), el('p', { class: 'exp-sub' }, t.subtitulo)) : null,
+        el('figure', { class: 'exp-fig' },
+          el('div', { class: 'pt-row' }, slot('imagen'), el('div', { class: 'exp-img', html: textImage(t.img) })),
+          t.epigrafe ? el('div', { class: 'pt-row' }, slot('epigrafe'), el('figcaption', { class: 'exp-cap' }, t.epigrafe)) : null),
+        t.paras.map(x => el('p', { class: 'exp-par' }, x)));
+      // ----- pistas
+      const bank = el('div', { class: 'pt-bank' });
+      function drawBank() {
+        bank.innerHTML = '';
+        const used = new Set(Object.values(slots).map(s => state[s.id]).filter(Boolean));
+        Object.entries(PARATEXTOS).forEach(([k, lab]) => {
+          if (used.has(k)) return;
+          const c = el('button', { type: 'button', class: `chip ${picked === k ? 'sel' : ''}`, draggable: 'true' }, lab);
+          c.addEventListener('click', () => { picked = picked === k ? null : k; drawBank(); });
+          c.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', k));
+          bankBtns[k] = c; bank.append(c);
+        });
+        if (!bank.children.length) bank.append(el('span', { class: 'pt-empty' }, 'No quedan etiquetas.'));
+      }
+      const optRow = (id, opts, cls) => {
+        const box = el('div', { class: `opts ${cls || ''}` }); const btns = opts.map((o, i) => {
+          const b = el('button', { type: 'button', class: 'opt', onclick: () => { if (ctx.locked(id)) return; state[id] = i; draw(); changed(); } }, o); box.append(b); return b; });
+        const draw = () => btns.forEach((b, i) => b.classList.toggle('sel', state[id] === i));
+        ui[id] = draw; return box;
+      };
+      const tipoId = `${base}-tipo`, parrId = `${base}-parr`;
+      const clue = (n, title, body, id) => el('div', { class: 'card exp-clue', dataset: { ids: id } }, el('p', { class: 'task-prompt' }, el('span', { class: 'q-num' }, String(n)), title), body);
+      const clues = el('div', { class: 'exp-clues' },
+        clue(1, '¿Qué tipo de texto es?', optRow(tipoId, TIPOS_TEXTO), tipoId),
+        clue(2, 'Ubicá en el texto las etiquetas que correspondan. Puede sobrar alguna.', bank, 'pt'),
+        clue(3, '¿Cuántos párrafos tiene? (Sin contar título, subtítulo ni epígrafe)', optRow(parrId, ['1', '2', '3', '4', '5'], 'nums'), parrId),
+        t.questions ? clue(4, 'Leé con atención y respondé.', el('div', { class: 'read-qs' }, t.questions.map(q => {
+          const id = `${base}-q-${q.id}`;
+          let body;
+          if (q.open) {
+            const ta = el('textarea', { class: 'open-answer', rows: '3', maxlength: '400', placeholder: 'Escribí tu respuesta y explicá por qué.', 'aria-label': q.q });
+            ta.addEventListener('input', () => { if (ctx.locked(id)) return; const v = ta.value.trim(); state[id] = v ? ta.value : null; changed(); });
+            ui[id] = () => { ta.value = state[id] || ''; ta.disabled = ctx.locked(id); };
+            body = ta;
+          } else body = optRow(id, q.options);
+          return el('div', { class: 'read-q', dataset: { ids: id } }, el('p', { class: 'read-q-text' }, el('span', { class: 'read-kind' }, q.kind), q.q), body);
+        })), 'lectura') : null);
+      const page = el('div', { class: 'exp-page', role: 'tabpanel' }, doc, clues);
+      pageEls.push(page); pages.append(page);
+      drawBank(); Object.values(slots).forEach(s => s.draw());
+      t._clues = clues; t._drawBank = drawBank; t._slots = slots;
+    });
+    root.append(el('div', { class: 'exp' }, tabs, pages));
+    showPage(0); refreshTabs();
+
+    const allItems = ITEMS_BY_ACT[a.id] || TYPES.texts.items(a);
+    const findText = id => a.texts.find(t => id.startsWith(`${a.id}-${t.id}-`));
+    return {
+      collect() {
+        const r = {};
+        allItems.forEach(it => {
+          const v = state[it.id]; const t = findText(it.id);
+          if (v == null) { r[it.id] = { value: null }; return; }
+          if (it.id.includes('-q-')) {
+            const q = t.questions.find(x => it.id.endsWith(`-q-${x.id}`));
+            if (q.open) { const txt = String(v).trim(); r[it.id] = txt ? { value: txt, correct: txt.length >= 15, raw: v } : { value: null }; }
+            else r[it.id] = { value: q.options[v], correct: v === q.answer, raw: v };
+          }
+          else if (it.id.endsWith('-tipo')) r[it.id] = { value: TIPOS_TEXTO[v], correct: v === t.type, raw: v };
+          else if (it.id.endsWith('-parr')) r[it.id] = { value: String(v + 1), correct: v + 1 === t.paras.length, raw: v };
+          else { const k = it.id.slice(it.id.lastIndexOf('-') + 1); r[it.id] = { value: PARATEXTOS[v], correct: v === k, raw: v }; }
+        });
+        return r;
+      },
+      restore(raw) {
+        for (const [id, v] of Object.entries(raw)) if (v != null) state[id] = v;
+        Object.values(ui).forEach(f => f()); refreshTabs();
+      },
+      lock(ids) {
+        a.texts.forEach(t => {
+          Object.values(t._slots).forEach(s => s.draw());
+          [`${a.id}-${t.id}-tipo`, `${a.id}-${t.id}-parr`].forEach(id => { if (ids.includes(id)) $(`[data-ids="${id}"]`, t._clues).classList.add('done-item'); });
+          (t.questions || []).forEach(q => { const id = `${a.id}-${t.id}-q-${q.id}`; if (ids.includes(id)) { const n = $(`[data-ids="${id}"]`, t._clues); n.classList.add('done-item'); const ta = $('textarea', n); if (ta) ta.disabled = true; } });
+          if (t.questions && t.questions.every(q => ids.includes(`${a.id}-${t.id}-q-${q.id}`))) $('[data-ids="lectura"]', t._clues).classList.add('done-item');
+          const slotIds = Object.values(t._slots).map(s => s.id);
+          if (slotIds.length && slotIds.every(id => ids.includes(id))) $('[data-ids="pt"]', t._clues).classList.add('done-item');
+        });
+      }
+    };
+  }
+};
+
 /* ---------- Preparación del banco de actividades ---------- */
 function normalize(a) {
   if (a.type === 'tf') {
@@ -1499,6 +1671,11 @@ function validateContent() {
     });
     if (a.type === 'table') a.rows.forEach(r => a.columns.forEach(c => { if (!c.options.includes(r[c.key])) errors.push(`Respuesta no está entre las opciones: ${a.id}-${r.id}-${c.key}`); }));
     if (typeof a.text === 'string' && !ACT_BY_ID[a.text]) errors.push(`Texto de referencia inexistente: ${a.id}`);
+    if (a.type === 'texts') {
+      const tipos = new Set(a.texts.map(t => t.type));
+      if (tipos.size !== TIPOS_TEXTO.length) errors.push(`Detectives de textos: faltan tipos textuales en ${a.id}`);
+      a.texts.forEach(t => { if (!t.title || !t.img || t.paras.length < 1 || t.paras.length > 5) errors.push(`Expediente incompleto: ${a.id}-${t.id}`); });
+    }
   }));
   if (errors.length) console.warn('⚠️ Control de calidad:', errors); else console.info(`✅ Control de calidad: ${ALL_ITEMS.length} ítems verificados en ${MISSIONS.length} misiones.`);
   return errors;
@@ -1593,7 +1770,7 @@ function buildPayload() {
     detalle.push({
       ...quien, mision: missionLabel(m), desafio: ACT_BY_ID[it.act].title, actividad: it.id, area: it.area, contenido: it.contLabel,
       consigna: it.prompt, estado: done ? 'Respondida' : 'Sin responder', respuesta: done ? r.v : '', correcta: it.correct,
-      resultado: done ? (r.ok ? 'Correcta' : 'Incorrecta') : 'Sin responder', fecha: done ? r.at : ''
+      resultado: done ? (it.open ? 'Opinión (revisar)' : r.ok ? 'Correcta' : 'Incorrecta') : 'Sin responder', fecha: done ? r.at : ''
     });
   }));
   return {
@@ -1778,7 +1955,7 @@ function mapArt(p, next) {
     `${aMountains(p, [[95, 300, 60], [165, 280, 70], [235, 310, 55]], 360)}${aCondor(p, 260, 300, .35)}`,
     `<g transform="translate(100 -12)"><g filter="url(#${p}sh)"><path d="M330 175 L450 175 L450 220 L330 220Z" fill="#e0f2fe"/><path d="M450 175 L472 160 L472 205 L450 220Z" fill="#93c5fd"/><path d="M322 178 L390 140 L458 178Z" fill="${G(p, 'red')}"/><path d="M458 178 L390 140 L412 128 L480 164Z" fill="#a51d1d"/>
       <rect x="350" y="186" width="20" height="18" rx="2" fill="#7dd3fc"/><rect x="410" y="186" width="20" height="18" rx="2" fill="#7dd3fc"/></g>${aFlask(p, 485, 205, .35, 'green')}</g>`,
- `<g transform="translate(140 80)"><g filter="url(#${p}sh)"><rect x="660" y="330" width="80" height="40" fill="#cbd5e1"/><path d="M660 332 A40 40 0 0 1 740 332Z" fill="${G(p, 'metal')}"/><rect x="694" y="296" width="12" height="40" rx="3" transform="rotate(30 700 316)" fill="#475569"/></g></g>${aMagnet(p, 545, 330, .3, -15)}`,
+ `<g transform="translate(770 470)" filter="url(#${p}sh)"><path d="M-40 30 L0 -36 L40 30Z" fill="${G(p, 'orange')}"/><path d="M0 -36 L40 30 L58 24 L20 -36Z" fill="#c2410c"/><path d="M-9 30 L0 2 L9 30Z" fill="#7c2d12"/></g>${aBalloon(p, 530, 330, .35)}`,
     `<g transform="translate(-150 40)"><g filter="url(#${p}sh)"><path d="M780 150 L900 150 L900 190 L780 190Z" fill="#fde68a"/><path d="M772 152 L840 112 L908 152Z" fill="${G(p, 'purple')}"/><rect x="828" y="160" width="22" height="30" rx="3" fill="#92400e"/></g>${aMagnifier(p, 925, 170, .3, -30)}</g>`
   ];
   const nodes = MISSIONS.map((m, i) => {
@@ -1816,7 +1993,6 @@ function mapArt(p, next) {
     ${deco.join('')}
     <path d="${route}" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round" opacity=".85"/>
     <path d="${route}" stroke="#8b5e34" stroke-width="6" fill="none" stroke-dasharray="2 14" stroke-linecap="round"/>
-    ${aCompass(p, 935, 525, 46)}
     ${aCloud(90, 70, .9)}${aCloud(560, 60, .7)}
     ${nodes}
   </svg>`;
@@ -1841,15 +2017,20 @@ function renderMap() {
   root.append(el('div', { class: 'map-layout' },
     el('div', { class: 'map-wrap', html: svg }),
     el('aside', { class: 'side' },
+      el('div', { class: 'side-card dest-card', html: all
+        ? '<h3>🏆 ¡Mapa completo!</h3><p>El equipo recuperó las cuatro piezas. ¡Mirá el final de la aventura!</p>'
+        : `<h3>📍 Próximo destino</h3><p><strong>Capítulo ${MISSIONS[next].num}: ${esc(MISSIONS[next].chapter)}</strong></p>${next > 0 ? `<p class="dest-prev">${esc(MISSIONS[next - 1].outro)}</p>` : '<p class="dest-prev">El cóndor ya sabe dónde cayó la primera pieza. ¡Seguilo!</p>'}` }),
       el('div', { class: 'side-card', html: `<h3>🧩 Piezas del mapa</h3><div class="pieces">${pieces}</div>` }),
       el('div', { class: 'side-card', html: `<h3>🗺️ Misiones</h3><div class="mission-list">${list}</div>${pendTotal ? '<p class="side-note">⏳ = respuestas que te quedaron sin responder. Tocá la misión en el mapa para completarlas.</p>' : ''}` }),
-      cta)));
+      cta,
+      el('button', { class: 'btn btn-ghost btn-sm', type: 'button', onclick: () => showPrologue() }, '📜 Leer la historia'))));
   $$('.map-node', root).forEach(n => {
     const go = () => { const i = +n.dataset.i; if (i > next) toast('Esta misión se desbloquea al terminar la anterior.'); else startMission(MISSIONS[i]); };
     n.addEventListener('click', go); n.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
   });
   MAP_JUST = null;
   show('s-mapa');
+  if (!S.prologo) showPrologue(() => { S.prologo = true; Store.save(); });
 }
 
 /* ---------- Transiciones y celebraciones ----------
@@ -1917,7 +2098,7 @@ function startMission(m) {
   root.append(el('div', { class: 'intro' },
     el('div', { class: 'intro-scene', html: sceneSVG(m.scene) }),
     el('div', {},
-      el('span', { class: 'pill gold' }, `Misión ${m.num} de ${MISSIONS.length}`),
+      el('span', { class: 'pill gold' }, `Misión ${m.num} de ${MISSIONS.length} · Capítulo ${m.num}: ${m.chapter}`),
       el('h2', {}, `${m.icon} ${m.title}`),
       el('p', { class: 'story' }, m.story),
       el('div', { class: 'integration' }, el('span', { class: 'pill lengua' }, '📘 ' + m.pills[0]), el('span', { class: 'pill naturales' }, '🌿 ' + m.pills[1])),
@@ -1930,7 +2111,9 @@ function startMission(m) {
 
 /* ---------- Actividad ---------- */
 function renderActivity() {
-  const m = missionById(S.cur.mission), ai = S.cur.act, a = m.activities[ai];
+  const m = missionById(S.cur.mission);
+  if (!(S.cur.act >= 0 && S.cur.act < m.activities.length)) S.cur.act = Math.max(0, Math.min(S.cur.act || 0, m.activities.length - 1));
+  const ai = S.cur.act, a = m.activities[ai];
   BG_MISSION = m.id;
   S.visited[m.id] = true;
   const its = ITEMS_BY_ACT[a.id], area = actArea(a);
@@ -2072,6 +2255,10 @@ function completeMission(m, pending = 0, already = false) {
     allDone && first ? el('p', { class: 'lead' }, el('strong', {}, `¡Era la última misión! Completaste las ${MISSIONS.length} etapas del recorrido.`)) : null,
     el('h2', {}, '¡Misión cumplida!'),
     el('p', { class: 'lead' }, 'Ganaste la insignia ', el('strong', {}, m.badge.name), ' y recuperaste una pieza del mapa del conocimiento.'),
+    el('div', { class: 'outro' },
+      el('p', {}, `📖 ${m.outro}`),
+      MISSIONS[m.num] ? el('p', { class: 'next-dest' }, `📍 Próximo destino: Capítulo ${MISSIONS[m.num].num}, ${MISSIONS[m.num].chapter.toLowerCase()}.`)
+        : el('p', { class: 'next-dest' }, '🗺️ ¡Ya podés completar el mapa!')),
     el('div', { class: 'stats' },
       el('div', { class: 'stat' }, el('strong', {}, `${actsDone}/${m.activities.length}`), el('span', {}, 'actividades completas')),
       el('div', { class: 'stat' }, el('strong', {}, `${st.answered}/${st.total}`), el('span', {}, 'respuestas dadas'))),
@@ -2095,6 +2282,14 @@ function renderFinal(celebrate = false) {
     el('div', { class: 'big-badge' }, '🗺️'),
     el('h2', { style: 'font-size:2.6rem' }, '¡Felicitaciones, lo lograste!'),
     el('p', { class: 'lead' }, `${S.nombre}, completaste las 4 misiones y recuperaste todas las piezas del mapa del conocimiento. ¡Terminaste el recorrido!`),
+    el('div', { class: 'journey' },
+      el('p', { class: 'journey-title' }, '📖 Así fue tu aventura'),
+      el('ul', {},
+        el('li', {}, '🏔️ En la cordillera descubriste cómo sobreviven los animales de Mendoza.'),
+        el('li', {}, '🦴 En el laboratorio pusiste en su lugar los huesos, las articulaciones y los músculos.'),
+        el('li', {}, '⚡ En el campamento resolviste el misterio de las chispas invisibles.'),
+        el('li', {}, '🔎 En el archivo secreto abriste el cofre como un verdadero detective de palabras y textos.')),
+      el('p', {}, 'El viento Zonda ya no puede con el Mapa del Conocimiento. El cóndor vuela en círculos para celebrar, y Valentina y Joaquín te nombran Explorador del Conocimiento.')),
     el('div', { class: 'final-badges' }, MISSIONS.map(m => el('div', { class: 'final-badge' }, el('div', {}, m.badge.icon), m.badge.name))),
     el('div', { class: 'stats' },
       el('div', { class: 'stat' }, el('strong', {}, `${MISSIONS.length}/${MISSIONS.length}`), el('span', {}, 'misiones completadas')),
@@ -2184,7 +2379,8 @@ function filtered(data) {
   data.general.filter(byDiv).forEach(g => { const k = rowKey(g); if (!map[k] || new Date(g.fecha) > new Date(map[k].fecha)) map[k] = g; });
   const general = Object.values(map).sort((a, b) => String(a.division + a.apellido + a.nombre).localeCompare(String(b.division + b.apellido + b.nombre), 'es'));
   const ses = new Set(general.map(g => g.sesion));
-  return { general, misiones: data.misiones.filter(r => ses.has(r.sesion)), detalle: data.detalle.filter(r => ses.has(r.sesion)) };
+  const vigentes = new Set(ALL_ITEMS.map(i => i.id));   // descarta filas de actividades eliminadas
+  return { general, misiones: data.misiones.filter(r => ses.has(r.sesion)), detalle: data.detalle.filter(r => ses.has(r.sesion) && vigentes.has(r.actividad)) };
 }
 async function refreshTeacher() {
   try { const res = await postJSON({ action: 'reporte', clave: T.key }, 45000); if (!res.ok) throw new Error(res.error); T.data = res; renderTeacher(); toast('Datos actualizados'); }
@@ -2230,6 +2426,7 @@ function tContenidos(box, D) {
     const k = r.contenido; byCont[k] = byCont[k] || { area: r.area, n: 0, ko: 0, pend: 0 };
     const i = r.actividad; byItem[i] = byItem[i] || { consigna: r.consigna, contenido: r.contenido, correcta: r.correcta, n: 0, ko: 0, pend: 0 };
     if (r.estado === 'Sin responder') { byCont[k].pend++; byItem[i].pend++; return; }
+    if (String(r.resultado).startsWith('Opinión')) return;   // la opinión no se cuenta como error
     byCont[k].n++; byItem[i].n++;
     if (r.resultado !== 'Correcta') { byCont[k].ko++; byItem[i].ko++; }
   });
@@ -2265,7 +2462,7 @@ function studentDetail(box, D, sesion) {
   const g = D.general.find(r => r.sesion === sesion); if (!g) return;
   const mis = D.misiones.filter(r => r.sesion === sesion);
   const det = D.detalle.filter(r => r.sesion === sesion);
-  box.innerHTML = `<div class="panel-card"><h3>🧭 ${esc(rowName(g))} · ${esc(g.division)}</h3>
+  box.innerHTML = `<div class="panel-card"><h3>🗺️ ${esc(rowName(g))} · ${esc(g.division)}</h3>
     <div class="kpis">
       <div class="kpi"><strong>${n0(g.porcentaje)}%</strong><span>logro (${n0(g.correctas)} correctas · ${n0(g.incorrectas)} incorrectas)</span></div>
       <div class="kpi"><strong>${n0(g.nota20)}/20</strong><span>equivalencia</span></div>
@@ -2276,7 +2473,7 @@ function studentDetail(box, D, sesion) {
     ${mis.map(r => hbar(`${String(r.mision).replace(/:.*/, '')} · ${r.area}`, n0(r.porcentaje), r.area === LEN ? 'lengua' : 'naturales', n0(r.sinResponder) ? ` · ${n0(r.sinResponder)} s/r` : '')).join('') || '<p>Todavía no empezó ninguna misión.</p>'}
     <h3 style="margin-top:1rem">Detalle de respuestas</h3>
     <div class="scroll-box"><table class="data-table"><thead><tr><th>Desafío</th><th>Contenido</th><th>Consigna</th><th>Estado</th><th>Respuesta</th><th>Correcta</th><th>Resultado</th></tr></thead><tbody>
-    ${det.map(r => `<tr><td>${esc(r.desafio)}</td><td>${esc(r.contenido)}</td><td>${esc(r.consigna)}</td><td>${esc(r.estado)}</td><td>${esc(r.respuesta)}</td><td>${esc(r.correcta)}</td><td class="${r.resultado === 'Correcta' ? 'tag-ok' : 'tag-ko'}">${esc(r.resultado)}</td></tr>`).join('')}
+    ${det.map(r => `<tr><td>${esc(r.desafio)}</td><td>${esc(r.contenido)}</td><td>${esc(r.consigna)}</td><td>${esc(r.estado)}</td><td>${esc(r.respuesta)}</td><td>${esc(r.correcta)}</td><td class="${r.resultado === 'Correcta' ? 'tag-ok' : String(r.resultado).startsWith('Opinión') ? '' : 'tag-ko'}">${esc(r.resultado)}</td></tr>`).join('')}
     </tbody></table></div></div>`;
   const sc = $('#s-docente'); sc.scrollTo({ top: box.offsetTop - 10, behavior: 'smooth' });
 }
@@ -2311,7 +2508,7 @@ function route() {
   if (location.hash === '#docente') { renderTeacher(); return true; }
   return false;
 }
-const APP_VERSION = '3';
+const APP_VERSION = '9';
 function init() {
   if (!$('#in-div')) {   // index.html viejo con script.js nuevo (o al revés)
     const e = $('#load-error'); if (e) e.hidden = false;
