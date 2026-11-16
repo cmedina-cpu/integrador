@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%BA%3C/text%3E%3C/svg%3E">
 </head>
 <body>
   <div id="app" class="app">
@@ -17,7 +17,7 @@
     <!-- ===== Barra superior (HUD): solo visible durante la aventura ===== -->
     <header class="hud" id="hud" hidden>
       <div class="hud-brand">
-        <span class="hud-logo" aria-hidden="true">🧭</span>
+        <span class="hud-logo" aria-hidden="true">🗺️</span>
         <div>
           <strong>Misión Ciencia y Palabras</strong>
           <small id="hud-explorer">Explorador</small>
@@ -45,7 +45,7 @@
             <p class="kicker">Integrador de Lengua y Ciencias Naturales · 4.º grado</p>
             <h1 id="titulo-app">MISIÓN CIENCIA Y PALABRAS</h1>
             <p class="subtitle">Exploradores del conocimiento</p>
-            <p class="lead">El <strong>mapa del conocimiento</strong> se rompió en cuatro piezas. Usá las <span class="tag-lengua">palabras</span> para descifrar pistas y la <span class="tag-nat">ciencia</span> para resolver misterios. ¿Te animás a recuperarlas?</p>
+            <p class="lead">Un fuerte viento <strong>Zonda</strong> rompió el <strong>mapa del conocimiento</strong> en cuatro piezas. Con tu equipo, usá las <span class="tag-lengua">palabras</span> para descifrar pistas y la <span class="tag-nat">ciencia</span> para resolver misterios. ¿Te animás a recuperarlas?</p>
 
             <!-- Si hay una partida guardada en esta compu, se muestra este bloque -->
             <div class="resume-box" id="resume-box" hidden>
@@ -80,6 +80,7 @@
           </div>
         </div>
         <a class="teacher-link" href="#docente" id="link-docente">Acceso docente</a>
+        <span class="app-version">Versión 9 · 16/11/2026</span>
       </section>
 
       <!-- ===== Mapa de misiones ===== -->
@@ -110,7 +111,7 @@
     <strong>⚠️ La aventura no pudo cargarse.</strong>
     <span>Abrí <b>index.html</b> desde la carpeta descomprimida, junto con <b>script.js</b> y <b>styles.css</b>, o usá el archivo <b>jugar-sin-instalar.html</b>. Si ya está publicada, actualizá la página con <b>Ctrl + F5</b>.</span>
   </div>
-  <script src="script.js?v=3"></script>
+  <script src="script.js?v=9"></script>
   <script>
     // Si script.js no cargó (archivo faltante o versión vieja guardada), se avisa en pantalla.
     setTimeout(function () { if (!window.MCP_READY) document.getElementById('load-error').hidden = false; }, 1500);
